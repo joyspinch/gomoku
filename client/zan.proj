@@ -1,0 +1,4 @@
+name = gomoku
+type = console
+entry = src/main.zan
+target = exe
