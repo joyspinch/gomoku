@@ -15,6 +15,7 @@ public class GmMenuScene : HtmlScene {
         handlers.Add("easy", () => this.Pick(0));
         handlers.Add("normal", () => this.Pick(1));
         handlers.Add("hard", () => this.Pick(2));
+        handlers.Add("settings", () => this.router.Go("settings"));
     }
 
     void Pick(int d) {

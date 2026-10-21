@@ -1,0 +1,17 @@
+using System;
+using Game.Foundation;
+
+// 设置基座的项目侧断言：
+//   - 默认值来自声明；
+//   - 非候选档位的写入被忽略（基座负责，游戏侧不该崩也不该写坏配置）；
+//   - 设置真的落盘（test.ps1 跑两遍：首跑写、次跑读回）。
+public class GmSettingsCheck {
+    static void Main() {
+        GmSettings.Ensure();
+        Console.WriteLine("delay=" + Convert.ToString(GmSettings.AiDelayMs()));
+        GmSettings.SetAiDelayMs(900);
+        GmSettings.SetAiDelayMs(999);   // 不在声明档位里：必须被忽略，仍是 900
+        Console.WriteLine("after=" + Convert.ToString(GmSettings.AiDelayMs()));
+        Console.WriteLine("settings OK");
+    }
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!-- 设置场景：AI 思考延迟三档。
+     档位控件 id 与事件名都取 "opt_<键>_<值>"（opt_aiDelayMs_200 这样）——
+     场景类按 SettingsModel 的声明生成同名事件，加选项不会让按钮与行错位。
+     视觉全由 class 驱动（.opt 基础档、.opt.on 当前档），行内 style 只留几何。 -->
+<html>
+<head>
+<style>
+.opt { font-size:19px; padding:10px 96px; background:linear-gradient(180deg,#c99b44,#a1742a); color:#42290d; border:2px solid #e0bd7a; border-radius:12px; }
+.opt.on { background:linear-gradient(180deg,#f6dda2,#dcae52); color:#2a1a05; border:2px solid #fff2cd; }
+</style>
+</head>
+<body style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;background:rgba(0,0,0,0)">
+  <div style="height:250px"></div>
+  <p style="color:#ffd696;font-size:26px;margin:0">设置</p>
+  <p style="color:#b9a98c;font-size:18px;margin:0">AI 思考延迟</p>
+  <button id="opt_aiDelayMs_200" data-on-click="opt_aiDelayMs_200" class="opt">快</button>
+  <button id="opt_aiDelayMs_500" data-on-click="opt_aiDelayMs_500" class="opt">适中</button>
+  <button id="opt_aiDelayMs_900" data-on-click="opt_aiDelayMs_900" class="opt">从容</button>
+  <div style="height:16px"></div>
+  <button data-on-click="reset" style="font-size:17px;padding:9px 70px;background:#3c3a33;color:#e6d2a8;border:2px solid #6b6350;border-radius:10px">恢复默认</button>
+  <button data-on-click="back" style="font-size:19px;padding:11px 100px;background:linear-gradient(180deg,#d9ab52,#b8862f);color:#42290d;border:2px solid #f0d18c;border-radius:12px">返回</button>
+</body>
+</html>

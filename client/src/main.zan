@@ -12,6 +12,9 @@ public class GmApp {
         router.Register("menu", new GmMenuScene(g));
         router.Register("play", new GmPlayScene(g));
         router.Register("over", new GmOverScene(g));
+        router.Register("settings", new GmSettingsScene(g));
+        // 设置读档一次（Game.Foundation.GameSettings 负责存盘与坏文件回退）。
+        GmSettings.Ensure();
         // demo 标记（gomoku_demo.txt）直接进对局自弈供截图/无头验证。
         router.Run(g.demo ? "play" : "menu");
     }

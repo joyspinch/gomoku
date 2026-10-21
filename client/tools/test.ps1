@@ -19,6 +19,30 @@ $out = Join-Path $repo 'build/gomoku'
 & (Join-Path $PSScriptRoot 'build.ps1') -Compiler $Compiler -PackageProject $PackageProject -Output $out
 $exe = Join-Path $out 'Gomoku.exe'
 if (-not (Test-Path $exe)) { throw "缺少可执行文件：$exe" }
+
+# --- 设置用例：跑两遍验证真的落盘 ---
+# 源码要**排除 main.zan**（它带 Main()，用例自己的 Main 才是入口）；
+# 其余游戏源码全部带上——用例要直接读写项目的设置声明。
+$caseSources = @(Get-ChildItem (Join-Path $project 'src') -Recurse -File -Filter *.zan |
+    Where-Object { $_.Name -ne 'main.zan' } |
+    Sort-Object FullName | ForEach-Object { $_.FullName })
+$settingsCase = Join-Path $project 'tests/settings.zan'
+$settingsExe = Join-Path $out 'settings.exe'
+& $Compiler (@($settingsCase) + $caseSources +
+    @('--auto-stdlib', '--package-project', $PackageProject, '-o', $settingsExe))
+if ($LASTEXITCODE -ne 0) { throw "设置用例编译失败（zanc=$LASTEXITCODE）" }
+$settingsFile = Join-Path $out 'gomoku_settings.json'
+if (Test-Path $settingsFile) { Remove-Item $settingsFile -Force }
+Push-Location $out
+try {
+    $first = & $settingsExe 2>&1 | Out-String
+    $second = & $settingsExe 2>&1 | Out-String
+} finally { Pop-Location }
+if ($first -notmatch 'settings OK') { throw "设置用例首跑输出不对：`n$first" }
+if ($second -notmatch 'settings OK') { throw "设置用例次跑输出不对：`n$second" }
+if ($first -notmatch 'delay=500') { throw "设置默认值不对：`n$first" }
+if ($second -notmatch 'delay=900') { throw "设置没有落盘（次跑仍读到默认值）：`n$second" }
+Write-Host 'settings_OK'
 # demo 标记：进对局自弈场景（比停在主菜单多跑一层玩法渲染）
 [IO.File]::WriteAllText((Join-Path $out 'gomoku_demo.txt'), 'demo', [Text.UTF8Encoding]::new($false))
 # UiDriver 脚本：等几帧 → dump → 退出（无头，不弹窗口）

@@ -1,0 +1,85 @@
+using System;
+using Gui;
+using Game.Foundation;
+using Game.Foundation.Gui;
+using Game.Kit;
+
+// 设置场景：整屏 HTML 面板。档位逻辑在共享基座
+// （Game.Foundation.SettingsModel 把声明翻译成档位、选档写回并存盘），
+// 这里只做"按钮 → 档位"的接线与当前档高亮。
+public class GmSettingsScene : HtmlScene {
+    GmGame g;
+    Control root;
+    SettingsModel model;
+
+    GmSettingsScene(GmGame g) {
+        this.g = g;
+        this.model = new SettingsModel(GmSettings.Base());
+    }
+
+    override string HtmlFile() { return "assets/scenes/settings.html"; }
+
+    override void OnWire(HtmlHandlers handlers) {
+        // 档位 id 约定 "opt_<键>_<值>"：事件名与控件 id 同名，
+        // 增删选项不会让按钮与行号错位。
+        for (int r = 0; r < this.model.Count(); r = r + 1) {
+            SettingRow row = this.model.RowAt(r);
+            for (int c = 0; c < row.ChoiceCount(); c = c + 1) {
+                string id = GmSettingsScene.OptId(row.Key, row.Values[c]);
+                string key = row.Key;
+                string value = row.Values[c];
+                handlers.Add(id, () => this.Pick(key, value));
+            }
+        }
+        handlers.Add("reset", () => this.Reset());
+        handlers.Add("back", () => this.router.Go("menu"));
+    }
+
+    // 档位控件 id / 事件名。
+    static string OptId(string key, string value) {
+        return "opt_" + key + "_" + value;
+    }
+
+    void Pick(string key, string value) {
+        this.model.SelectValue(key, value);
+        this.Mark();
+    }
+
+    void Reset() {
+        this.model.ResetAll();
+        this.Mark();
+    }
+
+    // 当前档位高亮。基础档类 "opt" 常驻，"on" 是互斥的状态类：
+    // group 里必须带上 "on"，SetClassIn 才会把取消高亮时的它摘掉。
+    void Mark() {
+        Control root = this.root;
+        if (root == null) { return; }
+        for (int r = 0; r < this.model.Count(); r = r + 1) {
+            SettingRow row = this.model.RowAt(r);
+            for (int c = 0; c < row.ChoiceCount(); c = c + 1) {
+                Control btn = root.Find(GmSettingsScene.OptId(row.Key, row.Values[c]));
+                if (btn != null) {
+                    btn.SetClassIn("optstate on", c == row.Current ? "on" : "");
+                }
+            }
+        }
+    }
+
+    override void OnEnter(Control root) {
+        this.root = root;
+        this.Mark();
+    }
+
+    override void Event(int kind, int key) {
+        if (kind == 4 && key == 27) { this.router.Go("menu"); }
+    }
+
+    override void Render(Canvas c, double alpha) {
+        GuiHost host = this.router.Host();
+        this.g.c = c;
+        this.g.SyncStage(host);
+        CDraw.Origin(0, host.ContentTop());
+        this.g.DrawMenuArt();
+    }
+}

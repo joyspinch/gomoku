@@ -229,7 +229,8 @@ public class GmGame {
         }
         if (c == 1) {
             this.aiTurn = true;
-            this.aiThinkAt = now + 350 + this.rng.Range(0, 450);
+            // AI 思考延迟走设置（快 / 适中 / 从容三档），再叠一点随机更像人。
+            this.aiThinkAt = now + GmSettings.AiDelayMs() + this.rng.Range(0, 450);
         } else {
             this.aiTurn = false;
         }
