@@ -51,7 +51,11 @@ PROJECT.md
 ## 素材与授权
 
 - **大背景图已改为本地程序化生成**：`client/assets/menu_bg.png`、`menu_bg2.png`、`play_bg.png` 由仓内 `client/tools/make_bgs.py` 生成（纯 numpy + PIL，无外部素材来源），重新生成命令 `python client/tools/make_bgs.py`。
-- 其余素材（木纹棋盘、棋子、标题图）随 zan-lang 早期游戏模板一同迁出，**仍没有留下来源与授权记录**；公开发布前请自行核对这些素材的授权，或按同样方式改成本地生成。
+- **木纹棋盘 / 黑白子 / 结算面板 / 标题由图像模型生成**：这批素材源自 zan-lang 早期五子棋模板，由图像模型（gpt-image-2）产出，生成管线为 zan-lang 的 `scripts/gen_assets.ps1` 与 `scripts/gen_game_art.ps1`（统一风格串见 `assets/game/style.md`，棋类品类限定词 `clean puzzle-piece iconography, flat readable shapes`），生成后做绿幕抠图与裁边缩放。逐项来源可追溯：
+  - `board_wood.png` —— [zan-lang `1c586f33`](https://github.com/joyspinch/zan-lang/commit/1c586f33d5f62cb835305cbbe6e2c75128b73c7e)（提交说明原文："Xiangqi: 10 endgame drills, **gpt-image** wood/piece textures; gomoku real stone/board textures"；该木纹图随后被五子棋与围棋共用同一张）。
+  - `stone_black.png` / `stone_white.png` / `title.png` —— [zan-lang `765e6685`](https://github.com/joyspinch/zan-lang/commit/765e66859190d4533b98cec10edde426256afbd1)（"Add gomoku (wood parlor, 3-tier AI, rank progression)"）。
+  - `board_wood2.png` / `stone_black2.png` / `stone_white2.png` / `panel.png` —— [zan-lang `a00646ae`](https://github.com/joyspinch/zan-lang/commit/a00646ae9116bc90d44bd9bd95715d91e4e3bae9)（"gomoku: 手绘素材接入"，手绘风格即共享风格串里的 `hand-painted digital illustration`）。
+- 仓库不含任何第三方版权素材；全部位图均为本项目自产（图像模型生成或本地程序化生成）。
 
 ## 许可
 
